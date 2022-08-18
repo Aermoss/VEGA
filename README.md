@@ -1,5 +1,5 @@
 # VEGAEngine
-A game engine made with C++ using OpenGL
+A game engine made in C++ using OpenGL
 
 # Examples
 ## Creating a window
