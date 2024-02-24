@@ -25,22 +25,22 @@ namespace vega {
         glm::vec3 direction = glm::vec3(glm::cos(glm::radians(yaw)), 0.0f, glm::sin(glm::radians(yaw)));
 
         if (window->input->getKey(GLFW_KEY_W))
-            position += speed * direction;
+            position += speed * direction * window->deltaTime;
 
         if (window->input->getKey(GLFW_KEY_S))
-            position += speed * -direction;
+            position += speed * -direction * window->deltaTime;
 
         if (window->input->getKey(GLFW_KEY_D))
-            position += speed * glm::normalize(glm::cross(direction, up));
+            position += speed * glm::normalize(glm::cross(direction, up)) * window->deltaTime;
 
         if (window->input->getKey(GLFW_KEY_A))
-            position += speed * -glm::normalize(glm::cross(direction, up));
+            position += speed * -glm::normalize(glm::cross(direction, up)) * window->deltaTime;
 
         if (window->input->getKey(GLFW_KEY_SPACE))
-            position += speed * up;
+            position += speed * up * window->deltaTime;
 
         if (window->input->getKey(GLFW_KEY_LEFT_SHIFT))
-            position += speed * -up;
+            position += speed * -up * window->deltaTime;
 
         double x, y;
         window->input->getMousePosition(&x, &y);

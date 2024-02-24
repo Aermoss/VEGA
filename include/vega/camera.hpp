@@ -24,8 +24,8 @@ namespace vega {
 
         public:
             VEGACamera(VEGAWindow* window, float fov, float near, float far, float sensitivity = 100.0f, \
-                float normalSpeed = 1.0f, float sprintSpeed = 2.0f, glm::vec3 position = glm::vec3(0.0f));
-                
+                float normalSpeed = 2.0f, float sprintSpeed = 5.0f, glm::vec3 position = glm::vec3(0.0f));
+
             ~VEGACamera();
             
             void updateMatrices(VEGAShader* shader);

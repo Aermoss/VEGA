@@ -29,7 +29,7 @@ int main(int argc, const char* argv[]) {
         vega::VEGAReadFile("shaders/default.frag")
     );
 
-    vega::VEGACamera camera(&window, 45.0f, 0.1f, 1000.0f, 200.0f, 0.05f, 0.1f, glm::vec3(0.0f, 0.0f, -2.0f));
+    vega::VEGACamera camera(&window, 45.0f, 0.1f, 1000.0f, 200.0f, 2.0f, 5.0f, glm::vec3(0.0f, 0.0f, -2.0f));
     vega::VEGAModel model("res/models/crow/scene.gltf");
     
     shader->use();

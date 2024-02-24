@@ -1,24 +1,25 @@
 #include <vega/window.hpp>
 
 namespace vega {
-    VEGAWindow::VEGAWindow(int width, int height, const char* title, const char* iconPath, VEGAColor backgroundColor, bool fullscreen, bool resizable, bool vsync)
-        : width(width), height(height), iconPath(iconPath), backgroundColor(backgroundColor), title(title), resizable(resizable), vsync(vsync), deltaTime(0.0), currentTime(0.0), lastTime(0.0) {
+    VEGAWindow::VEGAWindow(int32_t width, int32_t height, const char* title, const char* iconPath, VEGAColor backgroundColor, bool fullscreen, bool resizable, bool vsync)
+        : backgroundColor(backgroundColor), title(title), iconPath(iconPath), width(width), height(height), resizable(resizable), vsync(vsync), lastTime(0.0), currentTime(0.0), deltaTime(0.0) {
 
         glfwInit();
         glfwWindowHint(GLFW_RESIZABLE, resizable ? GLFW_TRUE : GLFW_FALSE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        
+        GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);
 
-        if (width == -1) { // bug with no curly braces
-            width = glfwGetVideoMode(glfwGetPrimaryMonitor())->width;
-        }
+        if (width == -1)
+            this->width = videoMode->width;
 
-        if (height == -1) {
-            height = glfwGetVideoMode(glfwGetPrimaryMonitor())->height;
-        }
+        if (height == -1)
+            this->height = videoMode->height;
 
-        window = glfwCreateWindow(width, height, title, fullscreen ? glfwGetPrimaryMonitor() : nullptr, nullptr);
+        window = glfwCreateWindow(width, height, title, fullscreen ? primaryMonitor : nullptr, nullptr);
         glfwMakeContextCurrent(window);
 
         if (iconPath != nullptr) {
@@ -32,16 +33,14 @@ namespace vega {
         glfwSwapInterval(vsync ? 1 : 0);
         gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
         glViewport(0, 0, width, height);
-        glClearColor(backgroundColor.get_rf(), backgroundColor.get_gf(), backgroundColor.get_bf(), backgroundColor.get_af());
+        glClearColor(backgroundColor.getRf(), backgroundColor.getGf(), backgroundColor.getBf(), backgroundColor.getAf());
+
+        input = new VEGAInput(window);
 
         glEnable(GL_DEPTH_TEST);
-        glEnable(GL_STENCIL_TEST);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
         glEnable(GL_CULL_FACE);
         glCullFace(GL_FRONT);
         glFrontFace(GL_CCW);
-
-        input = new VEGAInput(window);
     }
 
     VEGAWindow::~VEGAWindow() {
@@ -52,12 +51,9 @@ namespace vega {
         return glfwWindowShouldClose(window);
     }
 
-    int VEGAWindow::checkErrors(bool log) {
-        int error = glGetError();
-
-        if (error && log)
-            std::cout << "[ERROR]: " << error << std::endl;
-
+    int32_t VEGAWindow::checkErrors(bool log) {
+        int32_t error = glGetError();
+        if (error && log) std::cout << "VEGA: ERROR: " << error << std::endl;
         return error;
     }
 

@@ -39,7 +39,7 @@ int main(int argc, const char* argv[]) {
     shader.use();
     glUniform4fv(shader.getUniformLocation("lightColor"), 1, (float*) glm::value_ptr(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
     glUniform3fv(shader.getUniformLocation("lightPosition"), 1, (float*) glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
-    glUniform1f(shader.getUniformLocation("ambient"), ambient);
+    glUniform1f(shader.getUniformLocation("ambient"), 0.2f);
     shader.unuse();
 
     while (!window.shouldClose()) {
