@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "common.h"
+#include "physx/common.h"
 
 #if GLM_ARCH & GLM_ARCH_SSE2_BIT
 

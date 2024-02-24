@@ -1,12 +1,25 @@
 cc = g++
-cflags = -lopengl32 -lglfw3 -lgdi32 -static -static-libgcc -static-libstdc++
-src_files = src/*.cpp src/stb/*.cpp src/glad/*.c
-include_dirs = -Iinclude
-lib_dirs = -Llib -Llib/GLFW
-output_file = bin/main
+binaryDir := ./bin
+objectDir := ./bin/obj
+sourceDir := ./src
+includeDirs := ./include ./include/imgui
+libDirs := ./lib
+executable := $(binaryDir)/main.exe
+vendors := $(patsubst $(sourceDir)/vendor/%,%,$(wildcard $(sourceDir)/vendor/*))
+sources := $(wildcard $(sourceDir)/*.cpp) $(foreach vendor,$(vendors),$(wildcard $(sourceDir)/vendor/$(vendor)/*.cpp))
+objects := $(patsubst $(sourceDir)/%.cpp,$(objectDir)/%.o,$(sources)) $(foreach vendor,$(vendors),$(wildcard $(objectDir)/vendor/$(vendor)/*.o))
+flags = -lopengl32 -lglfw3 -lgdi32 -static -static-libgcc -static-libstdc++
 
-default:
-	xcopy shaders bin\shaders /E /H /C /I /Y
-	xcopy res bin\res /E /H /C /I /Y
-	$(cc) -o $(output_file) $(src_files) $(include_dirs) $(lib_dirs) $(cflags)
-	$(output_file)
+all: $(objectDir) $(executable) run
+
+$(executable): $(objects) | $(binaryDir)
+	$(cc) $^ -o $@ $(foreach dir,$(includeDirs),-I$(dir)) $(foreach dir,$(libDirs),-L$(dir)) $(flags)
+
+$(objectDir)/%.o: $(sourceDir)/%.cpp | $(objectDir)
+	$(cc) -c $< -o $@ $(foreach dir,$(includeDirs),-I$(dir))
+
+$(objectDir):
+	mkdir bin && cd bin && mkdir obj && cd obj && mkdir vendor && cd vendor && $(foreach dir,$(vendors),mkdir $(dir) &&) cd ../../..
+
+run: $(executable)
+	$<

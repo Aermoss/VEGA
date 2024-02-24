@@ -2,80 +2,79 @@
 #include <vector>
 #include <string>
 
-#include "vega.hpp"
+#include <vega/vega.hpp>
 
 static float ambient = 0.0f;
 static vega::VEGAShader* shader;
 
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
     ambient += yoffset / 10.0f;
 
-    if (ambient >= 0.99f)
-        ambient = 0.99f;
+    if (ambient >= 1.0f)
+        ambient = 1.0f;
 
-    if (ambient <= 0.01f)
-        ambient = 0.01f;
-
-    std::cout << "ambient: " << ambient << std::endl;
+    if (ambient <= 0.0f)
+        ambient = 0.0f;
 
     shader->use();
-    glUniform1f(shader->get_uniform_location("ambient"), ambient);
+    glUniform1f(shader->getUniformLocation("ambient"), ambient);
+    shader->unuse();
 }
 
 int main(int argc, const char* argv[]) {
-    vega::VEGAWindow window(1200, 600, "VEGA Window", "res/icon/icon.png", vega::VEGAColor(0.0f, 0.0f, 0.0f), false, false, true, true);
+    vega::VEGAWindow window(1200, 600, "VEGA Window");
 
     shader = new vega::VEGAShader(
         vega::VEGAReadFile("shaders/default.vert"),
         vega::VEGAReadFile("shaders/default.frag")
     );
 
-    vega::VEGAModel crow("res/models/crow/scene.gltf");
-    vega::VEGACamera camera(&window, 45.0f, 0.01f, 1000.0f, 200.0f, 0.05f, 0.1f, glm::vec3(0.0f, 0.0f, -2.0f));
-
-    // model.transform.scale(glm::vec3(0.5f, 0.8f, 0.5f));
-
-    glm::vec4 light_color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    glm::vec3 light_pos = glm::vec3(0.0f, 0.5f, 0.0f);
-
+    vega::VEGACamera camera(&window, 45.0f, 0.1f, 1000.0f, 200.0f, 0.05f, 0.1f, glm::vec3(0.0f, 0.0f, -2.0f));
+    vega::VEGAModel model("res/models/crow/scene.gltf");
+    
     shader->use();
-    glUniform4f(shader->get_uniform_location("light_color"), light_color.x, light_color.y, light_color.z, light_color.w);
-    glUniform3f(shader->get_uniform_location("light_position"), light_pos.x, light_pos.y, light_pos.z);
-    glUniform1f(shader->get_uniform_location("ambient"), ambient);
+    glUniform4fv(shader->getUniformLocation("lightColor"), 1, (float*) glm::value_ptr(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+    glUniform3fv(shader->getUniformLocation("lightPosition"), 1, (float*) glm::value_ptr(glm::vec3(0.5f, 0.5f, 0.5f)));
+    glUniform1f(shader->getUniformLocation("ambient"), ambient);
+    shader->unuse();
 
-    glfwSetScrollCallback(window.get(), scroll_callback);
+    glfwSetScrollCallback(window.get(), scrollCallback);
 
-    while (!window.should_close()) {
-        window.handle_events();
-        camera.handle_events();
-        window.clear_color();
+    while (!window.shouldClose()) {
+        window.pollEvents();
+        camera.processInputs();
+        window.clear();
 
-        if (window.input->get_mouse_button(GLFW_MOUSE_BUTTON_LEFT)) {
+        if (window.input->getMouseButton(VEGA_MOUSE_BUTTON_LEFT)) {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         }
 
-        if (window.input->get_mouse_button(GLFW_MOUSE_BUTTON_MIDDLE)) {
+        if (window.input->getMouseButton(VEGA_MOUSE_BUTTON_MIDDLE)) {
             glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
         }
 
-        if (window.input->get_mouse_button(GLFW_MOUSE_BUTTON_RIGHT)) {
+        if (window.input->getMouseButton(VEGA_MOUSE_BUTTON_RIGHT)) {
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         }
 
-        /* if (window.input->get_key(GLFW_KEY_Q)) {
+        if (window.input->getKey(VEGA_KEY_Q)) {
             model.transform.rotate(-1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
         }
 
-        if (window.input->get_key(GLFW_KEY_E)) {
+        if (window.input->getKey(VEGA_KEY_E)) {
             model.transform.rotate(1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-        } */
+        }
 
-        crow.render(*shader, camera);
+        model.render(shader, &camera);
 
-        window.check_errors();
-        window.swap_buffers();
+        window.checkErrors();
+        window.swapBuffers();
     }
 
     delete shader;
+    shader->destroy();
+
+    model.destroy();
+    window.destroy();
     return 0;
 }
