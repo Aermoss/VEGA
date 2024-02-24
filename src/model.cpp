@@ -1,3 +1,6 @@
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsequence-point"
+
 #include <vega/model.hpp>
 
 namespace vega {
@@ -145,7 +148,7 @@ namespace vega {
         uint32_t dataBegin = byteOffset + accessorByteOffset;
         uint32_t dataLength = count * 4 * numberPerVertex;
 
-        for (uint32_t i = dataBegin; i < dataBegin + dataLength; i) {
+        for (uint32_t i = dataBegin; i < dataBegin + dataLength;) {
             unsigned char bytes[] = {data[i++], data[i++], data[i++], data[i++]};
             float value;
             std::memcpy(&value, bytes, sizeof(float));
@@ -169,7 +172,7 @@ namespace vega {
         uint32_t dataBegin = byteOffset + accessorByteOffset;
 
         if (componentType == 5125) {
-            for (uint32_t i = dataBegin; i < dataBegin + count * 4; i) {
+            for (uint32_t i = dataBegin; i < dataBegin + count * 4;) {
                 unsigned char bytes[] = {data[i++], data[i++], data[i++], data[i++]};
                 uint32_t value;
                 std::memcpy(&value, bytes, sizeof(uint32_t));
@@ -178,7 +181,7 @@ namespace vega {
         }
 
         else if (componentType == 5123) {
-            for (uint32_t i = dataBegin; i < dataBegin + count * 2; i) {
+            for (uint32_t i = dataBegin; i < dataBegin + count * 2;) {
                 unsigned char bytes[] = {data[i++], data[i++]};
                 unsigned short value;
                 std::memcpy(&value, bytes, sizeof(unsigned short));
@@ -187,7 +190,7 @@ namespace vega {
         }
 
         else if (componentType == 5122) {
-            for (uint32_t i = dataBegin; i < dataBegin + count * 2; i) {
+            for (uint32_t i = dataBegin; i < dataBegin + count * 2;) {
                 unsigned char bytes[] = {data[i++], data[i++]};
                 short value;
                 std::memcpy(&value, bytes, sizeof(short));
@@ -243,7 +246,7 @@ namespace vega {
     std::vector<glm::vec2> VEGAModel::groupFloatsVec2(std::vector<float> floats) {
         std::vector<glm::vec2> vectors;
 
-        for (uint32_t i = 0; i < floats.size(); i) {
+        for (uint32_t i = 0; i < floats.size();) {
             vectors.push_back(glm::vec2(floats[i++], floats[i++]));
         } return vectors;
     }
@@ -251,7 +254,7 @@ namespace vega {
     std::vector<glm::vec3> VEGAModel::groupFloatsVec3(std::vector<float> floats) {
         std::vector<glm::vec3> vectors;
 
-        for (uint32_t i = 0; i < floats.size(); i) {
+        for (uint32_t i = 0; i < floats.size();) {
             vectors.push_back(glm::vec3(floats[i++], floats[i++], floats[i++]));
         } return vectors;
     }
@@ -259,7 +262,7 @@ namespace vega {
     std::vector<glm::vec4> VEGAModel::groupFloatsVec4(std::vector<float> floats) {
         std::vector<glm::vec4> vectors;
 
-        for (uint32_t i = 0; i < floats.size(); i) {
+        for (uint32_t i = 0; i < floats.size();) {
             vectors.push_back(glm::vec4(floats[i++], floats[i++], floats[i++], floats[i++]));
         } return vectors;
     }
@@ -276,3 +279,5 @@ namespace vega {
         }
     }
 }
+
+#pragma GCC diagnostic pop

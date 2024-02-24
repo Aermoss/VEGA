@@ -1,7 +1,7 @@
 #include <vega/texture.hpp>
 
 namespace vega {
-    VEGATexture::VEGATexture(const char* file, const char* type, unsigned int unit) : type(type), unit(unit) {
+    VEGATexture::VEGATexture(const char* file, const char* type, unsigned int unit) : unit(unit), type(type) {
         int width, height, channels;
         stbi_set_flip_vertically_on_load(true);
         unsigned char* bytes = stbi_load(file, &width, &height, &channels, 0);
