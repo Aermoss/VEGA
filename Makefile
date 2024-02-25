@@ -11,7 +11,7 @@ objects := $(patsubst $(sourceDir)/%.cpp,$(objectDir)/%.o,$(sources)) $(foreach 
 flags = -lopengl32 -lglfw3 -lgdi32 -static -static-libgcc -static-libstdc++
 warnings := all
 
-all: $(objectDir) $(executable) run
+default: $(executable) run
 
 $(executable): $(objects) | $(binaryDir)
 	$(cc) $(foreach warn,$(warnings),-W$(warn)) $^ -o $@ $(foreach dir,$(includeDirs),-I$(dir)) $(foreach dir,$(libDirs),-L$(dir)) $(flags)
